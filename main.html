@@ -1,4 +1,4 @@
-\<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -101,18 +101,19 @@
       let sixImages = [...chosen, duplicate];
       shuffle(sixImages);
 
-      // Render images
+      // Render images with .img1, .img2, ...
       sixImages.forEach((src, index) => {
         const img = document.createElement("img");
         img.src = src;
-        img.dataset.src = src; // track identity
+        img.dataset.src = src; 
+        img.classList.add(`img${index + 1}`); // Cypress will find .img1, .img2, ...
         img.addEventListener("click", () => handleImageClick(img));
         imagesContainer.appendChild(img);
       });
     }
 
     function handleImageClick(img) {
-      if (selectedImages.includes(img)) return; // avoid selecting same image twice
+      if (selectedImages.includes(img)) return; // avoid selecting same twice
       if (selectedImages.length >= 2) return; // only allow 2 selections
 
       img.classList.add("selected");
