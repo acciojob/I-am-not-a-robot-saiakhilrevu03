@@ -1,18 +1,149 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>I'm not a robot</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <main>
-      <!-- solution start -->
-      
-      <!-- solution end -->
-    </main>
-    <script src="./script.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>Not a Robot Verification</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    .images {
+      display: grid;
+      grid-template-columns: repeat(3, 120px);
+      gap: 15px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    img {
+      width: 120px;
+      height: 120px;
+      border: 2px solid #ccc;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: border 0.3s;
+    }
+    img.selected {
+      border: 2px solid #007bff;
+    }
+    button {
+      margin: 15px 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 6px;
+      border: none;
+    }
+    #reset {
+      background-color: #ff4d4d;
+      color: white;
+      display: none;
+    }
+    #verify {
+      background-color: #28a745;
+      color: white;
+      display: none;
+    }
+    #para {
+      font-size: 18px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h3 id="h">Please click on the identical tiles to verify that you are not a robot.</h3>
+  <div class="images" id="images"></div>
+
+  <div>
+    <button id="reset">Reset</button>
+    <button id="verify">Verify</button>
+  </div>
+
+  <p id="para"></p>
+
+  <script>
+    const imagePool = [
+      "https://picsum.photos/200?random=1",
+      "https://picsum.photos/200?random=2",
+      "https://picsum.photos/200?random=3",
+      "https://picsum.photos/200?random=4",
+      "https://picsum.photos/200?random=5"
+    ];
+
+    const imagesContainer = document.getElementById("images");
+    const resetBtn = document.getElementById("reset");
+    const verifyBtn = document.getElementById("verify");
+    const resultPara = document.getElementById("para");
+
+    let selectedImages = [];
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function init() {
+      // Reset state
+      imagesContainer.innerHTML = "";
+      selectedImages = [];
+      resultPara.textContent = "";
+      resetBtn.style.display = "none";
+      verifyBtn.style.display = "none";
+
+      // Pick 5 unique and 1 duplicate
+      let chosen = [...imagePool];
+      let duplicate = chosen[Math.floor(Math.random() * chosen.length)];
+      let sixImages = [...chosen, duplicate];
+      shuffle(sixImages);
+
+      // Render images
+      sixImages.forEach((src, index) => {
+        const img = document.createElement("img");
+        img.src = src;
+        img.dataset.src = src; // track identity
+        img.addEventListener("click", () => handleImageClick(img));
+        imagesContainer.appendChild(img);
+      });
+    }
+
+    function handleImageClick(img) {
+      if (selectedImages.includes(img)) return; // avoid selecting same image twice
+      if (selectedImages.length >= 2) return; // only allow 2 selections
+
+      img.classList.add("selected");
+      selectedImages.push(img);
+
+      resetBtn.style.display = "inline-block";
+
+      if (selectedImages.length === 2) {
+        verifyBtn.style.display = "inline-block";
+      }
+    }
+
+    resetBtn.addEventListener("click", () => {
+      init();
+    });
+
+    verifyBtn.addEventListener("click", () => {
+      const [img1, img2] = selectedImages;
+      if (img1.dataset.src === img2.dataset.src) {
+        resultPara.textContent = "You are a human. Congratulations!";
+        resultPara.style.color = "green";
+      } else {
+        resultPara.textContent = "We can't verify you as a human. You selected the non-identical tiles.";
+        resultPara.style.color = "red";
+      }
+      verifyBtn.style.display = "none"; // hide after check
+    });
+
+    // Initial load
+    init();
+  </script>
+
+</body>
 </html>
